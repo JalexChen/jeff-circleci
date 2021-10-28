@@ -62,7 +62,8 @@ jobs:
             JEST_JUNIT_OUTPUT_DIR: ./test-results/
           command: |
             npm install
-            jest $TEST --ci --runInBand --reporters=default --reporters=jest-junit
+            echo $TEST
+            npm run test:ci
 
       - store_artifacts:
           path: ./test-results/junit.xml
