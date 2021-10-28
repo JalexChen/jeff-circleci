@@ -57,14 +57,12 @@ jobs:
             - v1-jalex-circleci-deps-{{ checksum "package-lock.json" }}
             - v1-jalex-circleci-deps-
       - run:
-          name: Run Tests
+          environment:
+            TEST: circleci tests glob **/__tests__/*.js | circleci tests split
+            JEST_JUNIT_OUTPUT_DIR: ./test-results/
           command: |
             npm install
-            TEST=$(circleci tests glob **/__tests__/*.js | circleci tests split)
             jest $TEST --ci --runInBand --reporters=default --reporters=jest-junit
-
-          environment:
-            JEST_JUNIT_OUTPUT_DIR: ./test-results/
 
       - store_artifacts:
           path: ./test-results/junit.xml
