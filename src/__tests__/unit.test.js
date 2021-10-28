@@ -1,7 +1,7 @@
 import React from "react";
 import { configure, shallow } from "enzyme";
 import Adapter from "@wojtekmaj/enzyme-adapter-react-17";
-import { Display } from "./src/components/Display";
+import { Display } from "../components/Display";
 
 configure({ adapter: new Adapter() });
 
