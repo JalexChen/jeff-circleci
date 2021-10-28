@@ -43,7 +43,7 @@
 		"prettier": "2.4.1"
 	},
 	"jest": {
-		"reporters:": [
+		"reporters": [
 			"default",
 			"jest-junit"
 		],
