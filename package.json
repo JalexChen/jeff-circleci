@@ -43,8 +43,15 @@
 		"prettier": "2.4.1"
 	},
 	"jest": {
+		"reporters:": [
+			"default",
+			"jest-junit"
+		],
 		"coverageReporters": [
 			"jest-junit"
 		]
+	},
+	"jest-junit": {
+		"addFileAttribute": "true"
 	}
 }
