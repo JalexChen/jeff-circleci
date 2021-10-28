@@ -61,7 +61,7 @@ jobs:
           command: |
             npm install
             TEST=$(circleci tests glob **/__tests__/*.js | circleci tests split)
-            jest test $TEST --ci --runInBand --reporters=default --reporters=jest-junit
+            jest $TEST --ci --runInBand --reporters=default --reporters=jest-junit
 
           environment:
             JEST_JUNIT_OUTPUT_DIR: ./test-results/
