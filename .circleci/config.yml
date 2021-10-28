@@ -1,0 +1,75 @@
+version: 2.1
+jobs:
+  build:
+    parallelism: 2
+    docker:
+      - image: cimg/node:17.0.1
+        auth:
+          username: $DOCKERHUB_USER # env-var
+          password: $DOCKERHUB_PASSWORD # env-var
+    steps:
+      - checkout
+      - when:
+          condition:
+            equal: [main, << pipeline.git.branch >>]
+          steps:
+            - run: echo "on main"
+      - when:
+          condition:
+            equal: [staging, << pipeline.git.branch >>]
+          steps:
+            - run: echo "on staging"
+
+      - restore_cache:
+          keys:
+            - v1-jalex-circleci-deps-{{ checksum "package-lock.json" }}
+            - v1-jalex-circleci-deps-
+      - run:
+          command: |
+            npm install
+            echo jest -v
+            mkdir ./test-results
+
+      - save_cache:
+          key: v1-jalex-circleci-deps-{{ checksum "package-lock.json" }}
+          paths:
+            - /node_modules
+
+  test:
+    # need to add test splitting
+    parallelism: 2
+    docker:
+      - image: cimg/node:17.0.1
+        auth:
+          username: $DOCKERHUB_USER # env-var
+          password: $DOCKERHUB_PASSWORD # env-var
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-jalex-circleci-deps-{{ checksum "package-lock.json" }}
+            - v1-jalex-circleci-deps-
+      - run:
+          name: Run Tests
+          command: |
+            npm install
+            npm run test:ci
+
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: ./test-results/
+
+      - store_artifacts:
+          path: ./test-results/junit.xml
+          destination: ./test-results
+
+      - store_test_results:
+          path: ./test-results/junit.xml
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
