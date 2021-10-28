@@ -1,3 +1,9 @@
+# multi-stage docker build that first starts off with the actual build, with both running two containers in parallel:
+# build:
+# implements conditional logic to check which branch is currently being integrated and will echo the branch; functionally, this doesn't do much,
+# but i understand how this could facilitate more automated builds and deployments with additional parameters
+# caches are first attempted to be restored in the build, then saved if there are changes after the prior run
+
 version: 2.1
 jobs:
   build:
@@ -5,8 +11,8 @@ jobs:
     docker:
       - image: cimg/node:17.0.1
         auth:
-          username: $DOCKERHUB_USER # env-var
-          password: $DOCKERHUB_PASSWORD # env-var
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
       - when:
@@ -27,22 +33,23 @@ jobs:
       - run:
           command: |
             npm install
-            echo jest -v
             mkdir ./test-results
 
       - save_cache:
           key: v1-jalex-circleci-deps-{{ checksum "package-lock.json" }}
           paths:
             - /node_modules
-
+  # test:
+  # runs two containers in parallel and attempts to restore the cache from the required - build: in the workflow
+  # two test suites are split into two different files which are both run and output to the same path/directory via jest junit
+  # these are then saved as artifacts and can be seen in the artifacts tab in the circleci dashboard
   test:
-    # need to add test splitting
     parallelism: 2
     docker:
       - image: cimg/node:17.0.1
         auth:
-          username: $DOCKERHUB_USER # env-var
-          password: $DOCKERHUB_PASSWORD # env-var
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
       - restore_cache:
@@ -53,7 +60,8 @@ jobs:
           name: Run Tests
           command: |
             npm install
-            npm run test:ci
+            TEST=$(circleci tests glob **/__tests__/*.js | circleci tests split --split-by=timings)
+            npm run test:ci $TEST
 
           environment:
             JEST_JUNIT_OUTPUT_DIR: ./test-results/

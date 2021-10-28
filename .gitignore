@@ -15,6 +15,7 @@
 .DS_Store
 .env
 scratch.js
+reportWebVitals.js
 
 npm-debug.log*
 yarn-debug.log*
