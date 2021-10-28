@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="1" failures="0" errors="0" time="3.248">
+  <testsuite name="Display test" errors="0" failures="0" skipped="0" timestamp="2021-10-28T23:10:53" time="2.019" tests="1">
+    <testcase classname="Display test Should render an empty string within the Display" name="Display test Should render an empty string within the Display" time="0.004" file="src/__tests__/unit.test.js">
+    </testcase>
+  </testsuite>
+</testsuites>
