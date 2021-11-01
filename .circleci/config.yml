@@ -10,7 +10,6 @@ jobs:
     parallelism: 2
     docker:
       - image: cimg/node:17.0.1
-        # technically didn't need this unless i had environment variables included
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -29,16 +28,15 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-jalex-circleci-deps-{{ checksum "package-lock.json" }}
-            - v1-jalex-circleci-deps-
+            - v2-jalex-circleci-deps-{{ checksum "package-lock.json" }}
+            - v2-jalex-circleci-deps-
       - run:
-          # not sure if i needed to make the new directory; i technically made it myself
           command: |
             npm install
             mkdir ./test-results
 
       - save_cache:
-          key: v1-jalex-circleci-deps-{{ checksum "package-lock.json" }}
+          key: v2-jalex-circleci-deps-{{ checksum "package-lock.json" }}
           paths:
             - ./node_modules
   # test:
@@ -56,8 +54,8 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-jalex-circleci-deps-{{ checksum "package-lock.json" }}
-            - v1-jalex-circleci-deps-
+            - v2-jalex-circleci-deps-{{ checksum "package-lock.json" }}
+            - v2-jalex-circleci-deps-
       - run:
           environment:
             TEST: circleci tests glob **/__tests__/*.js | circleci tests split
