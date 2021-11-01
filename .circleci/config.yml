@@ -10,6 +10,7 @@ jobs:
     parallelism: 2
     docker:
       - image: cimg/node:17.0.1
+        # technically didn't need this unless i had environment variables included
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -31,6 +32,7 @@ jobs:
             - v1-jalex-circleci-deps-{{ checksum "package-lock.json" }}
             - v1-jalex-circleci-deps-
       - run:
+          # not sure if i needed to make the new directory; i technically made it myself
           command: |
             npm install
             mkdir ./test-results
@@ -38,7 +40,7 @@ jobs:
       - save_cache:
           key: v1-jalex-circleci-deps-{{ checksum "package-lock.json" }}
           paths:
-            - /node_modules
+            - ./node_modules
   # test:
   # runs two containers in parallel and attempts to restore the cache from the required - build: in the workflow
   # two test suites are split into two different files which are both run and output to the same path/directory via jest junit
@@ -61,14 +63,12 @@ jobs:
             TEST: circleci tests glob **/__tests__/*.js | circleci tests split
             JEST_JUNIT_OUTPUT_DIR: ./test-results/
           command: |
-            npm install
             echo $TEST
             npm run test:ci
 
       - store_artifacts:
           path: ./test-results/junit.xml
           destination: ./test-results
-
       - store_test_results:
           path: ./test-results/junit.xml
 
